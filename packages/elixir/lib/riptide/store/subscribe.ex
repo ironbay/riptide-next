@@ -1,5 +1,16 @@
 defmodule Riptide.Subscribe do
   @moduledoc false
+
+  def child_spec(_opts) do
+    %{
+      id: __MODULE__,
+      start: {:pg, :start_link, []},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
+
   def watch(path), do: watch(path, self())
 
   def watch(path, pid) do
@@ -10,20 +21,11 @@ defmodule Riptide.Subscribe do
         :ok
 
       true ->
-        :pg2.join(group, pid)
+        :pg.join(group, pid)
     end
   end
 
-  def member?(group, pid) do
-    case :pg2.get_members(group) do
-      {:error, {:no_such_group, _}} ->
-        :pg2.create(group)
-        false
-
-      result ->
-        pid in result
-    end
-  end
+  def member?(group, pid), do: pid in :pg.get_members(group)
 
   # TODO: This could have a better implementation
   @spec broadcast_mutation(Riptide.Mutation.t()) :: :ok
@@ -52,16 +54,12 @@ defmodule Riptide.Subscribe do
        end)}
     end)
     |> Enum.each(fn {path, value} ->
-      path
-      |> group()
-      |> :pg2.get_members()
-      |> case do
-        {:error, _} ->
-          :skip
+      members =
+        path
+        |> group()
+        |> :pg.get_members()
 
-        members ->
-          Enum.map(members, fn pid -> send(pid, {:mutation, value}) end)
-      end
+      Enum.map(members, fn pid -> send(pid, {:mutation, value}) end)
     end)
   end
 

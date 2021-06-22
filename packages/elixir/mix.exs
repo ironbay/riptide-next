@@ -15,7 +15,7 @@ defmodule Riptide.MixProject do
           docs: "https://riptide.ironbay.co"
         }
       ],
-      elixir: "~> 1.9",
+      elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs()

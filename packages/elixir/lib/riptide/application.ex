@@ -7,6 +7,7 @@ defmodule Riptide.Application do
 
   def start(_type, _args) do
     children = [
+      {Riptide.Subscribe, []}
       # Starts a worker by calling: Riptide.Worker.start_link(arg)
       # {Riptide.Worker, arg}
       # {Riptide.Websocket.Server, %{}}

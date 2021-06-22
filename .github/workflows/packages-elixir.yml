@@ -41,8 +41,8 @@ jobs:
         uses: erlef/setup-elixir@v1
         with:
           experimental-otp: true
-          elixir-version: 1.11.x # Define the elixir version [required]
-          otp-version: 22.x # Define the OTP version [required]
+          elixir-version: 1.12.x # Define the elixir version [required]
+          otp-version: 24.x # Define the OTP version [required]
       - name: Cache deps
         uses: actions/cache@v1
         with:
